@@ -7,62 +7,62 @@ define apache::loadmodule () {
 }
 
 # deploys Ceph radosgw as an Apache FastCGI application
-class ceph::radosgw (
+class ceph_fuel::radosgw (
   $rgw_id      = 'radosgw.gateway',
-  $rgw_user    = $::ceph::params::user_httpd,
-  $use_ssl     = $::ceph::use_ssl,
-  $primary_mon = $::ceph::primary_mon,
+  $rgw_user    = $::ceph_fuel::params::user_httpd,
+  $use_ssl     = $::ceph_fuel::use_ssl,
+  $primary_mon = $::ceph_fuel::primary_mon,
 
   # RadosGW settings
-  $rgw_host                         = $::ceph::rgw_host,
-  $rgw_port                         = $::ceph::rgw_port,
-  $swift_endpoint_port              = $::ceph::swift_endpoint_port,
-  $rgw_keyring_path                 = $::ceph::rgw_keyring_path,
-  $rgw_socket_path                  = $::ceph::rgw_socket_path,
-  $rgw_log_file                     = $::ceph::rgw_log_file,
-  $rgw_data                         = $::ceph::rgw_data,
-  $rgw_dns_name                     = $::ceph::rgw_dns_name,
-  $rgw_print_continue               = $::ceph::rgw_print_continue,
+  $rgw_host                         = $::ceph_fuel::rgw_host,
+  $rgw_port                         = $::ceph_fuel::rgw_port,
+  $swift_endpoint_port              = $::ceph_fuel::swift_endpoint_port,
+  $rgw_keyring_path                 = $::ceph_fuel::rgw_keyring_path,
+  $rgw_socket_path                  = $::ceph_fuel::rgw_socket_path,
+  $rgw_log_file                     = $::ceph_fuel::rgw_log_file,
+  $rgw_data                         = $::ceph_fuel::rgw_data,
+  $rgw_dns_name                     = $::ceph_fuel::rgw_dns_name,
+  $rgw_print_continue               = $::ceph_fuel::rgw_print_continue,
 
   #rgw Keystone settings
-  $rgw_use_pki                      = $::ceph::rgw_use_pki,
-  $rgw_use_keystone                 = $::ceph::rgw_use_keystone,
-  $rgw_keystone_url                 = $::ceph::rgw_keystone_url,
-  $rgw_keystone_admin_token         = $::ceph::rgw_keystone_admin_token,
-  $rgw_keystone_token_cache_size    = $::ceph::rgw_keystone_token_cache_size,
-  $rgw_keystone_accepted_roles      = $::ceph::rgw_keystone_accepted_roles,
-  $rgw_keystone_revocation_interval = $::ceph::rgw_keystone_revocation_interval,
-  $rgw_nss_db_path                  = $::ceph::rgw_nss_db_path,
-  $pub_ip                           = $::ceph::rgw_pub_ip,
-  $adm_ip                           = $::ceph::rgw_adm_ip,
-  $int_ip                           = $::ceph::rgw_int_ip,
+  $rgw_use_pki                      = $::ceph_fuel::rgw_use_pki,
+  $rgw_use_keystone                 = $::ceph_fuel::rgw_use_keystone,
+  $rgw_keystone_url                 = $::ceph_fuel::rgw_keystone_url,
+  $rgw_keystone_admin_token         = $::ceph_fuel::rgw_keystone_admin_token,
+  $rgw_keystone_token_cache_size    = $::ceph_fuel::rgw_keystone_token_cache_size,
+  $rgw_keystone_accepted_roles      = $::ceph_fuel::rgw_keystone_accepted_roles,
+  $rgw_keystone_revocation_interval = $::ceph_fuel::rgw_keystone_revocation_interval,
+  $rgw_nss_db_path                  = $::ceph_fuel::rgw_nss_db_path,
+  $pub_ip                           = $::ceph_fuel::rgw_pub_ip,
+  $adm_ip                           = $::ceph_fuel::rgw_adm_ip,
+  $int_ip                           = $::ceph_fuel::rgw_int_ip,
 
   #rgw Log settings
-  $use_syslog                       = $::ceph::use_syslog,
-  $syslog_facility                  = $::ceph::syslog_log_facility,
-  $syslog_level                     = $::ceph::syslog_log_level,
+  $use_syslog                       = $::ceph_fuel::use_syslog,
+  $syslog_facility                  = $::ceph_fuel::syslog_log_facility,
+  $syslog_level                     = $::ceph_fuel::syslog_log_level,
 ) {
 
   $keyring_path     = "/etc/ceph/keyring.${rgw_id}"
   $radosgw_auth_key = "client.${rgw_id}"
   $dir_httpd_root   = '/var/www/radosgw'
 
-  package { [$::ceph::params::package_radosgw,
-             $::ceph::params::package_fastcgi,
-             $::ceph::params::package_libnss,
+  package { [$::ceph_fuel::params::package_radosgw,
+             $::ceph_fuel::params::package_fastcgi,
+             $::ceph_fuel::params::package_libnss,
             ]:
     ensure  => 'installed',
   }
 
   if !(defined('horizon') or
-       defined($::ceph::params::package_httpd) or
-       defined($::ceph::params::service_httpd) ) {
-    package {$::ceph::params::package_httpd:
+       defined($::ceph_fuel::params::package_httpd) or
+       defined($::ceph_fuel::params::service_httpd) ) {
+    package {$::ceph_fuel::params::package_httpd:
       ensure => 'installed',
     }
     service { 'httpd':
       ensure => 'running',
-      name   => $::ceph::params::service_httpd,
+      name   => $::ceph_fuel::params::service_httpd,
       enable => true,
     }
   }
@@ -92,7 +92,7 @@ class ceph::radosgw (
 
   if ($use_ssl) {
 
-    $httpd_ssl = $::ceph::params::dir_httpd_ssl
+    $httpd_ssl = $::ceph_fuel::params::dir_httpd_ssl
     exec {'copy OpenSSL certificates':
       command => "scp -r ${rgw_nss_db_path}/* ${primary_mon}:${rgw_nss_db_path} && \
                   ssh ${primary_mon} '/etc/init.d/radosgw restart'",
@@ -134,7 +134,7 @@ class ceph::radosgw (
 
     } #END rgw_use_pki
 
-  class {'ceph::keystone':
+  class {'ceph_fuel::keystone':
     pub_ip              => $pub_ip,
     adm_ip              => $adm_ip,
     int_ip              => $int_ip,
@@ -147,12 +147,12 @@ class ceph::radosgw (
 
     file {'/etc/apache2/sites-enabled/rgw.conf':
       ensure => link,
-      target => "${::ceph::params::dir_httpd_sites}/rgw.conf",
+      target => "${::ceph_fuel::params::dir_httpd_sites}/rgw.conf",
       notify => Service['httpd'],
     }
 
-    Package[$::ceph::params::package_fastcgi] ->
-    File["${::ceph::params::dir_httpd_sites}/rgw.conf"] ->
+    Package[$::ceph_fuel::params::package_fastcgi] ->
+    File["${::ceph_fuel::params::dir_httpd_sites}/rgw.conf"] ->
     File['/etc/apache2/sites-enabled/rgw.conf'] ~>
     Service['httpd']
 
@@ -174,7 +174,7 @@ class ceph::radosgw (
 
   }
 
-  file {[$::ceph::params::dir_httpd_ssl,
+  file {[$::ceph_fuel::params::dir_httpd_ssl,
          "${rgw_data}/ceph-${rgw_id}",
          $rgw_data,
          $dir_httpd_root,
@@ -185,17 +185,17 @@ class ceph::radosgw (
     recurse => true,
   }
 
-  file { "${::ceph::params::dir_httpd_sites}/rgw.conf":
-    content => template('ceph/rgw.conf.erb'),
+  file { "${::ceph_fuel::params::dir_httpd_sites}/rgw.conf":
+    content => template('ceph_fuel/rgw.conf.erb'),
   }
 
   file { "${dir_httpd_root}/s3gw.fcgi":
-    content => template('ceph/s3gw.fcgi.erb'),
+    content => template('ceph_fuel/s3gw.fcgi.erb'),
     mode    => '0755',
   }
 
-  file {"${::ceph::params::dir_httpd_sites}/fastcgi.conf":
-    content => template('ceph/fastcgi.conf.erb'),
+  file {"${::ceph_fuel::params::dir_httpd_sites}/fastcgi.conf":
+    content => template('ceph_fuel/fastcgi.conf.erb'),
     mode    => '0755',
     }
 
@@ -211,14 +211,14 @@ class ceph::radosgw (
   file { $keyring_path: mode => '0640', }
 
   Ceph_conf <||> ->
-  Package[$::ceph::params::package_httpd] ->
-  Package[[$::ceph::params::package_radosgw,
-           $::ceph::params::package_fastcgi,
-           $::ceph::params::package_libnss,]] ->
-  File[["${::ceph::params::dir_httpd_sites}/rgw.conf",
-        "${::ceph::params::dir_httpd_sites}/fastcgi.conf",
+  Package[$::ceph_fuel::params::package_httpd] ->
+  Package[[$::ceph_fuel::params::package_radosgw,
+           $::ceph_fuel::params::package_fastcgi,
+           $::ceph_fuel::params::package_libnss,]] ->
+  File[["${::ceph_fuel::params::dir_httpd_sites}/rgw.conf",
+        "${::ceph_fuel::params::dir_httpd_sites}/fastcgi.conf",
         "${dir_httpd_root}/s3gw.fcgi",
-        $::ceph::params::dir_httpd_ssl,
+        $::ceph_fuel::params::dir_httpd_ssl,
         "${rgw_data}/ceph-${rgw_id}",
         $rgw_data,
         $dir_httpd_root,

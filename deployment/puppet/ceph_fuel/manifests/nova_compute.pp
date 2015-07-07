@@ -1,12 +1,12 @@
 # configure the nova_compute parts if present
-class ceph::nova_compute (
-  $rbd_secret_uuid     = $::ceph::rbd_secret_uuid,
-  $user                = $::ceph::compute_user,
-  $compute_pool        = $::ceph::compute_pool,
+class ceph_fuel::nova_compute (
+  $rbd_secret_uuid     = $::ceph_fuel::rbd_secret_uuid,
+  $user                = $::ceph_fuel::compute_user,
+  $compute_pool        = $::ceph_fuel::compute_pool,
 ) {
 
   file {'/root/secret.xml':
-    content => template('ceph/secret.erb')
+    content => template('ceph_fuel/secret.erb')
   }
 
   exec {'Set Ceph RBD secret for Nova':

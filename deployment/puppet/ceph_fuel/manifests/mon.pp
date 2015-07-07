@@ -1,7 +1,7 @@
 # setup Ceph monitors
-class ceph::mon (
-  $mon_hosts        = $::ceph::mon_hosts,
-  $mon_ip_addresses = $::ceph::mon_ip_addresses,
+class ceph_fuel::mon (
+  $mon_hosts        = $::ceph_fuel::mon_hosts,
+  $mon_ip_addresses = $::ceph_fuel::mon_ip_addresses,
 ) {
 
   firewall {'010 ceph-mon allow':
@@ -40,11 +40,11 @@ class ceph::mon (
   Exec['Wait for Ceph quorum']   ->
   Exec['ceph-deploy gatherkeys']
 
-  if $::hostname == $::ceph::primary_mon {
+  if $::hostname == $::ceph_fuel::primary_mon {
 
     # After the primary monitor has established a quorum, it is safe to
     # add other monitors to ceph.conf. All other Ceph nodes will get
-    # these settings via 'ceph-deploy config pull' in ceph::conf.
+    # these settings via 'ceph-deploy config pull' in ceph_fuel::conf.
     ceph_conf {
       'global/mon_host':            value => join($mon_ip_addresses, ' ');
       'global/mon_initial_members': value => join($mon_hosts, ' ');

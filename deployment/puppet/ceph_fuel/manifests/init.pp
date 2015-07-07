@@ -1,7 +1,7 @@
 # ceph configuration and resource relations
 # TODO: split ceph module to submodules instead of using case with roles
 
-class ceph (
+class ceph_fuel (
       # General settings
       $mon_hosts,
       $mon_ip_addresses,
@@ -43,7 +43,7 @@ class ceph (
       $rgw_keystone_admin_token           = undef,
       $rgw_keystone_token_cache_size      = '10',
       $rgw_keystone_accepted_roles        = '_member_, Member, admin, swiftoperator',
-      $rgw_keystone_revocation_interval   = $::ceph::rgw_use_pki ? { false => 1000000, default => 60},
+      $rgw_keystone_revocation_interval   = $::ceph_fuel::rgw_use_pki ? { false => 1000000, default => 60},
       $rgw_data                           = '/var/lib/ceph/radosgw',
       $rgw_dns_name                       = "*.${::domain}",
       $rgw_print_continue                 = true,
@@ -88,22 +88,22 @@ class ceph (
          cwd  => '/root',
   }
 
-  # Re-enable ceph::yum if not using a Fuel iso with Ceph packages
-  #include ceph::yum
+  # Re-enable ceph_fuel::yum if not using a Fuel iso with Ceph packages
+  #include ceph_fuel::yum
 
   if hiera('role') =~ /controller|ceph|compute|cinder/ {
     # the regex above includes all roles that require ceph.conf
-    include ceph::ssh
-    include ceph::params
-    include ceph::conf
-    Class[['ceph::ssh', 'ceph::params']] -> Class['ceph::conf']
+    include ceph_fuel::ssh
+    include ceph_fuel::params
+    include ceph_fuel::conf
+    Class[['ceph_fuel::ssh', 'ceph_fuel::params']] -> Class['ceph_fuel::conf']
   }
 
   if hiera('role') =~ /controller|ceph/ {
     service {'ceph':
       ensure  => 'running',
       enable  => true,
-      require => Class['ceph::conf']
+      require => Class['ceph_fuel::conf']
     }
     Package<| title == 'ceph' |> ~> Service<| title == 'ceph' |>
     if !defined(Service['ceph']) {
@@ -113,30 +113,30 @@ class ceph (
 
   case hiera('role') {
     'primary-controller', 'controller', 'ceph-mon': {
-      include ceph::mon
+      include ceph_fuel::mon
 
-      Class['ceph::conf'] -> Class['ceph::mon'] ->
+      Class['ceph_fuel::conf'] -> Class['ceph_fuel::mon'] ->
       Service['ceph']
 
-      if ($::ceph::use_rgw) {
-        include ceph::radosgw
-        Class['ceph::mon'] ->
-        Class['ceph::radosgw'] ~>
+      if ($::ceph_fuel::use_rgw) {
+        include ceph_fuel::radosgw
+        Class['ceph_fuel::mon'] ->
+        Class['ceph_fuel::radosgw'] ~>
         Service['ceph']
         if defined(Class['::keystone']){
-          Class['::keystone'] -> Class['ceph::radosgw']
+          Class['::keystone'] -> Class['ceph_fuel::radosgw']
         }
       }
     }
 
     'ceph-osd': {
       if ! empty($osd_devices) {
-        include ceph::osds
-        Class['ceph::conf'] -> Class['ceph::osds'] ~> Service['ceph']
+        include ceph_fuel::osds
+        Class['ceph_fuel::conf'] -> Class['ceph_fuel::osds'] ~> Service['ceph']
       }
     }
 
-    'ceph-mds': { include ceph::mds }
+    'ceph-mds': { include ceph_fuel::mds }
 
     default: {}
   }

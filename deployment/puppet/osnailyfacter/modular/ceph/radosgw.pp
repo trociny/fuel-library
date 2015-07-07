@@ -39,9 +39,9 @@ if $use_ceph and $storage_hash['objects_ceph'] {
     apache::mod {'fastcgi': }
   }
 
-  include ceph::params
+  include ceph_fuel::params
 
-  class { 'ceph::radosgw':
+  class { 'ceph_fuel::radosgw':
     # SSL
     use_ssl                          => false,
 

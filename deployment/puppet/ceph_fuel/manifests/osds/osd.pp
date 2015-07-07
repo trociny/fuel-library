@@ -1,4 +1,4 @@
-define ceph::osds::osd () {
+define ceph_fuel::osds::osd () {
 
   $deploy_device_name = "${::hostname}:${name}"
 

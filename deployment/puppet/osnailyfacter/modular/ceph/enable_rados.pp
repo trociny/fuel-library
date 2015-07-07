@@ -1,6 +1,6 @@
-include ::ceph::params
+include ::ceph_fuel::params
 
-$radosgw_service = $::ceph::params::service_radosgw
+$radosgw_service = $::ceph_fuel::params::service_radosgw
 
 # ensure the service is running and will start on boot
 service { $radosgw_service:

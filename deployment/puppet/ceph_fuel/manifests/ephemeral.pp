@@ -1,8 +1,8 @@
 # Enable RBD backend for ephemeral volumes
-class ceph::ephemeral (
-  $rbd_secret_uuid     = $::ceph::rbd_secret_uuid,
-  $libvirt_images_type = $::ceph::libvirt_images_type,
-  $pool                = $::ceph::compute_pool,
+class ceph_fuel::ephemeral (
+  $rbd_secret_uuid     = $::ceph_fuel::rbd_secret_uuid,
+  $libvirt_images_type = $::ceph_fuel::libvirt_images_type,
+  $pool                = $::ceph_fuel::compute_pool,
 ) {
 
   nova_config {

@@ -19,7 +19,7 @@ Exec { path    => [ '/bin/', '/sbin/' , '/usr/bin/', '/usr/sbin/' ],
 }
 
 # DO NOT SPLIT ceph auth command lines! See http://tracker.ceph.com/issues/3279
-ceph::pool {$glance_pool:
+ceph_fuel::pool {$glance_pool:
   user          => $glance_user,
   acl           => "mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool=${glance_pool}'",
   keyring_owner => 'glance',
@@ -27,7 +27,7 @@ ceph::pool {$glance_pool:
   pgp_num       => $osd_pool_default_pg_num,
 }
 
-ceph::pool {$cinder_pool:
+ceph_fuel::pool {$cinder_pool:
   user          => $cinder_user,
   acl           => "mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool=${cinder_pool}, allow rx pool=${glance_pool}'",
   keyring_owner => 'cinder',
@@ -35,7 +35,7 @@ ceph::pool {$cinder_pool:
   pgp_num       => $osd_pool_default_pg_num,
 }
 
-ceph::pool {$cinder_backup_pool:
+ceph_fuel::pool {$cinder_backup_pool:
   user          => $cinder_backup_user,
   acl           => "mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool=${cinder_backup_pool}, allow rx pool=${cinder_pool}'",
   keyring_owner => 'cinder',
@@ -43,7 +43,7 @@ ceph::pool {$cinder_backup_pool:
   pgp_num       => $osd_pool_default_pg_num,
 }
 
-Ceph::Pool[$glance_pool] -> Ceph::Pool[$cinder_pool] -> Ceph::Pool[$cinder_backup_pool]
+Ceph_fuel::Pool[$glance_pool] -> Ceph_fuel::Pool[$cinder_pool] -> Ceph_fuel::Pool[$cinder_backup_pool]
 
 if ($storage_hash['volumes_ceph']) {
   include ::cinder::params
@@ -54,7 +54,7 @@ if ($storage_hash['volumes_ceph']) {
     hasrestart => true,
   }
 
-  Ceph::Pool[$cinder_pool] ~> Service['cinder-volume']
+  Ceph_fuel::Pool[$cinder_pool] ~> Service['cinder-volume']
 
   service { 'cinder-backup':
     ensure     => 'running',
@@ -63,7 +63,7 @@ if ($storage_hash['volumes_ceph']) {
     hasrestart => true,
   }
 
-  Ceph::Pool[$cinder_backup_pool] ~> Service['cinder-backup']
+  Ceph_fuel::Pool[$cinder_backup_pool] ~> Service['cinder-backup']
 }
 
 if ($storage_hash['images_ceph']) {
@@ -75,6 +75,6 @@ if ($storage_hash['images_ceph']) {
     hasrestart => true,
   }
 
-  Ceph::Pool[$glance_pool] ~> Service['glance-api']
+  Ceph_fuel::Pool[$glance_pool] ~> Service['glance-api']
 }
 

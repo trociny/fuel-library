@@ -238,7 +238,7 @@ class openstack::glance (
       }
     }
     'rbd', 'ceph': {
-      Ceph::Pool<| title == $::ceph::glance_pool |> ->
+      Ceph_fuel::Pool<| title == $::ceph_fuel::glance_pool |> ->
       class { "glance::backend::rbd":
         rbd_store_user => $rbd_store_user,
         rbd_store_pool => $rbd_store_pool,

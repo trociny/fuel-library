@@ -42,7 +42,7 @@ if $use_ceph {
     $ceph_public_network = hiera('management_network_range')
   }
 
-  class {'ceph':
+  class {'ceph_fuel':
     primary_mon              => $primary_mon,
     mon_hosts                => nodes_with_roles($nodes_hash, ['primary-controller',
                                                  'controller', 'ceph-mon'], 'name'),
@@ -82,8 +82,8 @@ if $use_ceph {
       hasrestart => true,
     }
 
-    Class['ceph'] ~> Service['cinder-volume']
-    Class['ceph'] ~> Service['cinder-backup']
+    Class['ceph_fuel'] ~> Service['cinder-volume']
+    Class['ceph_fuel'] ~> Service['cinder-backup']
   }
 
   if ($storage_hash['images_ceph']) {
@@ -95,7 +95,7 @@ if $use_ceph {
       hasrestart => true,
     }
 
-    Class['ceph'] ~> Service['glance-api']
+    Class['ceph_fuel'] ~> Service['glance-api']
   }
 
 }

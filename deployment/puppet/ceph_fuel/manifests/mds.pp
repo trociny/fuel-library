@@ -1,6 +1,6 @@
-# Ceph::mds will install mds server if invoked
+# Ceph_fuel::mds will install mds server if invoked
 
-class ceph::mds (
+class ceph_fuel::mds (
 ) {
   if $::mds_server {
     exec { 'ceph-deploy mds create':

@@ -1,6 +1,6 @@
 # create a Ceph pool with an associated Cephx user and ACL
 
-define ceph::pool (
+define ceph_fuel::pool (
   # Cephx user and ACL
   $user = $name,
   $acl  = "mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool=${name}'",
@@ -10,8 +10,8 @@ define ceph::pool (
   $keyring_group = $keyring_owner,
 
   # Pool settings
-  $pg_num  = $::ceph::osd_pool_default_pg_num,
-  $pgp_num = $::ceph::osd_pool_default_pgp_num,
+  $pg_num  = $::ceph_fuel::osd_pool_default_pg_num,
+  $pgp_num = $::ceph_fuel::osd_pool_default_pgp_num,
 ) {
 
   exec {"Create ${name} pool":

@@ -1,5 +1,5 @@
 # configure yum repos for Ceph
-class ceph::yum (
+class ceph_fuel::yum (
   $release = 'cuttlefish'
   )
 {

@@ -1,10 +1,10 @@
-#ceph::keystone will configure keystone with ceph parts
-class ceph::keystone (
-  $pub_ip               = $::ceph::rgw_pub_ip,
-  $adm_ip               = $::ceph::rgw_adm_ip,
-  $int_ip               = $::ceph::rgw_int_ip,
+#ceph_fuel::keystone will configure keystone with ceph parts
+class ceph_fuel::keystone (
+  $pub_ip               = $::ceph_fuel::rgw_pub_ip,
+  $adm_ip               = $::ceph_fuel::rgw_adm_ip,
+  $int_ip               = $::ceph_fuel::rgw_int_ip,
   $region               = 'RegionOne',
-  $swift_endpoint_port  = $::ceph::swift_endpoint_port,
+  $swift_endpoint_port  = $::ceph_fuel::swift_endpoint_port,
 ) {
   keystone_service {'swift':
     ensure      => present,

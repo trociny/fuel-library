@@ -6,7 +6,7 @@
 #
 # [*enabled_backends*]
 #   (Required) a list of ini sections to enable.
-#   This should contain names used in ceph::backend::* resources.
+#   This should contain names used in ceph_fuel::backend::* resources.
 #   Example: ['volume1', 'volume2', 'sata3']
 #
 # === Deprecated Parameters

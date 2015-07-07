@@ -1,15 +1,15 @@
 # configure apt sources for Ceph
-class ceph::apt (
+class ceph_fuel::apt (
   $release = 'cuttlefish'
 ) {
   apt::key { 'ceph':
     key        => '17ED316D',
     key_source => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
-    require    => Class['ceph::ssh']
+    require    => Class['ceph_fuel::ssh']
   }
   apt::key { 'radosgw':
     key     => '6EAEAE2203C3951A',
-    require => Class['ceph::ssh']
+    require => Class['ceph_fuel::ssh']
   }
   Apt::Source {
     require => Apt::Key['ceph', 'radosgw'],

@@ -142,7 +142,7 @@ class openstack::cinder(
 
   if $manage_volumes {
     ####### Disable upstart startup on install #######
-    #NOTE(bogdando) ceph::backends::rbd creates override file as well
+    #NOTE(bogdando) ceph_fuel::backends::rbd creates override file as well
     if($::operatingsystem == 'Ubuntu' and $manage_volumes != 'ceph') {
       tweaks::ubuntu_service_override { 'cinder-volume':
         package_name => 'cinder-volume',
@@ -167,7 +167,7 @@ class openstack::cinder(
       }
       'ceph': {
         if defined(Class['::ceph']) {
-          Ceph::Pool<| title == $::ceph::cinder_pool |> ->
+          Ceph_fuel::Pool<| title == $::ceph_fuel::cinder_pool |> ->
           Class['cinder::volume::rbd']
         }
 

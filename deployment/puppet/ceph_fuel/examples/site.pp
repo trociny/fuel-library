@@ -16,7 +16,7 @@ $public_network = '192.168.0.0/24'
 # cluster_network is necessary to ensure that osd's bind to the expected interface.
 $cluster_network = '10.0.0.0/24'
 
-# osd_devices is used in ceph::osd to activate the disk and join it to the
+# osd_devices is used in ceph_fuel::osd to activate the disk and join it to the
 # cluster.
 # it may be <device_name|mounted_path>[:journal_device|journal_path]...
 $osd_devices = split($::osd_devices_list, ' ')
@@ -58,7 +58,7 @@ $use_rgw = false
 #$rgw_int_ip => 192.168.1.20,
 
 node 'default' {
-  class {'ceph':
+  class {'ceph_fuel':
       # General settings
       cluster_node_address => $cluster_node_address, #This should be the cluster service address
       primary_mon          => $primary_mon, #This should be the first controller
@@ -90,7 +90,7 @@ node 'default' {
       rgw_keystone_admin_token         => $rgw_keystone_admin_token,
       rgw_keystone_token_cache_size    => '10',
       rgw_keystone_accepted_roles      => '_member_, Member, admin, swiftoperator',
-      rgw_keystone_revocation_interval => $::ceph::rgw_use_pki ? { false => 1000000, default => 60 },
+      rgw_keystone_revocation_interval => $::ceph_fuel::rgw_use_pki ? { false => 1000000, default => 60 },
       rgw_data                         => '/var/lib/ceph/radosgw',
       rgw_dns_name                     => "*.${::domain}",
       rgw_print_continue               => false,

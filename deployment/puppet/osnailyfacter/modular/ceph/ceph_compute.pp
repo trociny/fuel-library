@@ -50,7 +50,7 @@ if $use_ceph {
     $ceph_public_network = hiera('management_network_range')
   }
 
-  class {'ceph':
+  class {'ceph_fuel':
     primary_mon              => $primary_mon,
     mon_hosts                => nodes_with_roles($nodes_hash, ['primary-controller',
                                                  'controller', 'ceph-mon'], 'name'),
@@ -75,9 +75,9 @@ if $use_ceph {
   }
 
 
-  service { $::ceph::params::service_nova_compute :}
+  service { $::ceph_fuel::params::service_nova_compute :}
 
-  ceph::pool {$compute_pool:
+  ceph_fuel::pool {$compute_pool:
     user          => $compute_user,
     acl           => "mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool=${cinder_pool}, allow rx pool=${glance_pool}, allow rwx pool=${compute_pool}'",
     keyring_owner => 'nova',
@@ -85,18 +85,18 @@ if $use_ceph {
     pgp_num       => $storage_hash['pg_num'],
   }
 
-  include ceph::nova_compute
+  include ceph_fuel::nova_compute
 
   if ($storage_hash['ephemeral_ceph']) {
-     include ceph::ephemeral
-     Class['ceph::conf'] -> Class['ceph::ephemeral'] ~>
-     Service[$::ceph::params::service_nova_compute]
+     include ceph_fuel::ephemeral
+     Class['ceph_fuel::conf'] -> Class['ceph_fuel::ephemeral'] ~>
+     Service[$::ceph_fuel::params::service_nova_compute]
   }
 
-  Class['ceph::conf'] ->
-  Ceph::Pool[$compute_pool] ->
-  Class['ceph::nova_compute'] ~>
-  Service[$::ceph::params::service_nova_compute]
+  Class['ceph_fuel::conf'] ->
+  Ceph_fuel::Pool[$compute_pool] ->
+  Class['ceph_fuel::nova_compute'] ~>
+  Service[$::ceph_fuel::params::service_nova_compute]
 
   Exec { path => [ '/bin/', '/sbin/' , '/usr/bin/', '/usr/sbin/' ],
          cwd  => '/root',

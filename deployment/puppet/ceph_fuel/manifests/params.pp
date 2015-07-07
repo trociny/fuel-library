@@ -1,5 +1,5 @@
 # These are per-OS parameters and should be considered static
-class ceph::params {
+class ceph_fuel::params {
 
   case $::osfamily {
     'RedHat': {

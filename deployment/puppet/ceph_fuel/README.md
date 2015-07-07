@@ -76,7 +76,7 @@ node 'default' {
 This section configures components for all nodes of Ceph and OpenStack.
 
 ```puppet
-class { 'ceph::deploy':
+class { 'ceph_fuel::deploy':
     auth_supported   => 'cephx',
     osd_journal_size => '2048',
     osd_mkfs_type    => 'xfs',

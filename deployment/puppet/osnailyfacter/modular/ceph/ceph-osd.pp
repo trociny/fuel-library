@@ -75,7 +75,7 @@ if ($use_neutron) {
   $ceph_public_network = hiera('management_network_range')
 }
 
-class {'ceph':
+class {'ceph_fuel':
   primary_mon              => $primary_mon,
   mon_hosts                => nodes_with_roles($nodes_hash, ['primary-controller',
                                                'controller', 'ceph-mon'], 'name'),
