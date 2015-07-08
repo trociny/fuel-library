@@ -3,9 +3,7 @@
 class ceph_fuel::mds (
 ) {
   if $::mds_server {
-    exec { 'ceph-deploy mds create':
-      command   => "ceph-deploy mds create ${::mds_server}",
-      logoutput => true,
-    }
+
+    class { 'ceph::mds': }
   }
 }
