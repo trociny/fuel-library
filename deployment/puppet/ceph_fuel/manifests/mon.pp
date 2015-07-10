@@ -4,41 +4,33 @@ class ceph_fuel::mon (
   $mon_ip_addresses = $::ceph_fuel::mon_ip_addresses,
 ) {
 
+  $bootstrap_keyring = '/tmp/ceph-mon-keyring'
+
   firewall {'010 ceph-mon allow':
     chain  => 'INPUT',
     dport  => 6789,
     proto  => 'tcp',
     action => accept,
-  }
+  } ->
 
-  exec {'ceph-deploy mon create':
-    command   => "ceph-deploy mon create ${::hostname}:${::internal_address}",
-    logoutput => true,
-    unless    => "ceph mon stat | grep ${::internal_address}",
-  }
+  ceph_fuel::keys { $bootstrap_keyring: } ->
+
+  ceph::mon { $::hostname:
+    keyring => $bootstrap_keyring,
+  } ->
+
+  exec { "rm-keyring $bootstrap_keyring":
+     command => "/bin/rm -f ${bootstrap_keyring}",
+  } ->
 
   exec {'Wait for Ceph quorum':
-    # this can be replaced with "ceph mon status mon.$::host" for Dumpling
-    command   => 'ps ax|grep -vq ceph-create-keys',
+    command   => 'ceph mon stat',
     returns   => 0,
     tries     => 60,  # This is necessary to prevent a race: mon must establish
     # a quorum before it can generate keys, observed this takes upto 15 seconds
     # Keys must exist prior to other commands running
     try_sleep => 1,
   }
-
-  exec {'ceph-deploy gatherkeys':
-    command => "ceph-deploy gatherkeys ${::hostname}",
-    creates => ['/root/ceph.bootstrap-mds.keyring',
-                '/root/ceph.bootstrap-osd.keyring',
-                '/root/ceph.client.admin.keyring',
-               ],
-  }
-
-  Firewall['010 ceph-mon allow'] ->
-  Exec['ceph-deploy mon create'] ->
-  Exec['Wait for Ceph quorum']   ->
-  Exec['ceph-deploy gatherkeys']
 
   if $::hostname == $::ceph_fuel::primary_mon {
 
@@ -57,7 +49,7 @@ class ceph_fuel::mon (
       subscribe => [Ceph_conf['global/mon_host'], Ceph_conf['global/mon_initial_members']]
     }
 
-    Exec['ceph-deploy gatherkeys'] ->
+    Exec['Wait for Ceph quorum'] ->
     Ceph_conf[['global/mon_host', 'global/mon_initial_members']] ->
     Exec['reload Ceph for HA']
   }
