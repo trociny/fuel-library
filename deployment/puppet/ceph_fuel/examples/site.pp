@@ -4,9 +4,8 @@ Exec { path => [ '/bin/', '/sbin/' , '/usr/bin/', '/usr/sbin/' ] }
 # Hostnames MUST match either cluster_network, or public_network or
 # ceph will not setup correctly.
 
-# primary_mon defines the node from which ceph-deploy will pull it's config
-# from in any following nodes. All nodes must have a ssh-key and root (or sudo)
-# access to this host. ceph-deploy new will only be run from here.
+# Ceph configs are pulled from primary_mon to any following node.
+# All nodes must have a ssh-key and root access to this host.
 $primary_mon = 'controller-1.domain.tld'
 
 # public_network is necessary to add monitors atomically, the monitor nodes will

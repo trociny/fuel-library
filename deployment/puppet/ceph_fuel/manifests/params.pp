@@ -17,12 +17,8 @@ class ceph_fuel::params {
       $dir_httpd_sites            = '/etc/httpd/conf.d/'
       $dir_httpd_ssl              = '/etc/httpd/ssl/'
 
-      package { ['ceph', 'redhat-lsb-core','ceph-deploy',]:
+      package { ['ceph', 'redhat-lsb-core']:
         ensure => installed,
-      }
-
-      file {'/etc/sudoers.d/ceph':
-        content => "# This is required for ceph-deploy\nDefaults !requiretty\n"
       }
     }
 
@@ -41,7 +37,7 @@ class ceph_fuel::params {
       $dir_httpd_sites            = '/etc/apache2/sites-available/'
       $dir_httpd_ssl              = '/etc/apache2/ssl/'
 
-      package { ['ceph','ceph-deploy', ]:
+      package { ['ceph']:
         ensure => installed,
       }
     }
